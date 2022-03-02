@@ -37,7 +37,7 @@ class Login extends Component {
                 loading: true
             });
             const success = await this.context.login(this.state.email, this.state.password)
-            success && history.push("/home");
+            success && history.push("/movies");
             this.setState({
                 loading: false
             })

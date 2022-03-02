@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 import { AuthProvider } from '../contexts/AuthContext';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
 import Login from './Login';
-import Home from './Home';
+import MoviesPage from './MoviesPage';
 import history from '../history';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route exact path='/' element={<Signup />} />
           <Route exact path='/login' element={<Login />} />
-          <Route exact path='/home' element={<Home />} />
+          <Route exact path='/movies' element={<MoviesPage />} />
         </Routes>   
       </AuthProvider>
     </BrowserRouter>
