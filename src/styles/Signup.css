@@ -1,0 +1,35 @@
+
+#signup-container{
+    width: 60%;
+    margin: auto;
+    margin-top: 10%;
+}
+
+h1{
+    text-align: center;
+}
+
+#signup-form{
+    width: 70%;
+    margin: auto;
+}
+
+.input-block{
+    width: 100%;
+    height: 3rem;
+    border-color: lightgray;
+    padding-left: 0.8rem;
+    font-size: 1.2rem;
+}
+
+#sign-up-btn{
+    width: 100%;
+    height: 3rem;
+    background-color: blue;
+    font-size: 1.3rem;
+    color: white;
+}
+
+.input-divs{
+    padding: 0% 4% 5% 0%
+}
