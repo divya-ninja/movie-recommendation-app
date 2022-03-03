@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase';
 
 export const AuthContext = React.createContext();
@@ -28,6 +28,7 @@ export function AuthProvider( {children} ) {
         return unsubscribe;
     }, [])
 
+    // values and methods to be passed through AuthContext Provider
     const value = {
         currentUser,
         signup,

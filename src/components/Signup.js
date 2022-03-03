@@ -32,9 +32,11 @@ class Signup extends Component {
         });
     }
 
+    // function for signing up for an account
     async handleSubmit(e){
         e.preventDefault();
 
+        // Throwing error if password and confirm password doesn't match
         if(this.state.password !== this.state.passwordConfirm){
             return this.setState({
                 error: "Passwords do not match"
@@ -46,18 +48,22 @@ class Signup extends Component {
                 error: "",
                 loading: true
             });
+            // signing up if there is no error with the entered email and password
             await this.context.signup(this.state.email, this.state.password)
             .then(() => {
+                // setting the database using firestore
                 return db.collection("users").doc(this.context.currentUser.uid).set({
                     id: this.context.currentUser.uid,
                     email: this.context.currentUser.email
             })
+            // redirecting to movies page after signing in
             .then(() => {
                 history.push("/movies");
                 window.location.reload(true);
             })
         })
         }catch{
+            // setting up error if couldn't sign up
             this.setState({
                 error: "Failed to create account"
             })
@@ -70,14 +76,15 @@ class Signup extends Component {
     }
 
     render(){
-        // console.log(this.context.signup);
         return(
             <div>
+                {/* app's logo and name */}
                 <div style={{marginTop: "2%", marginLeft: "5%", color: "white"}}>
                     <FontAwesomeIcon icon={faVideoCamera} size="3x" color='red'  />
                     <h2 style={{marginTop: -2, color: "white"}}>Universal Cinema</h2>
                 </div>
 
+                {/* sign up container with form */}
                 <div className='container'>
                     <h1> Sign Up </h1>
                     {this.state.error && <h3 id="error">{this.state.error}</h3>}
@@ -123,6 +130,8 @@ class Signup extends Component {
                         
                         <button className='submit-btn' disabled={this.state.loading}>Sign Up</button>
                     </form>
+                    
+                    {/* if already have an account redirecting to login page */}
                     <div className='redirect-link'> Already have an account ? <Link to="/login"> Log In </Link></div>
                 </div>
             </div>

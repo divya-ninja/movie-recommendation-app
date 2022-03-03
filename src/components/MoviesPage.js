@@ -7,11 +7,11 @@ import { AuthContext } from '../contexts/AuthContext';
 import history from '../history';
 import { Link } from 'react-router-dom';
 
+let numPage = 1;
 
+const MOVIES_API = "https://api.themoviedb.org/3/movie/popular?api_key=17d9b4847fdd4db487cdec8cb73cb0c5&language=en-US&page=";
 
-const MOVIES_API = "https://api.themoviedb.org/3/movie/popular?api_key=17d9b4847fdd4db487cdec8cb73cb0c5&language=en-US";
-
-const SEARCH_API = "https://api.themoviedb.org/3/search/movie?&api_key=17d9b4847fdd4db487cdec8cb73cb0c5&page=1&query=";
+const SEARCH_API = "https://api.themoviedb.org/3/search/movie?&api_key=17d9b4847fdd4db487cdec8cb73cb0c5&query=";
 
 const GENRES_API = "https://api.themoviedb.org/3/genre/movie/list?api_key=17d9b4847fdd4db487cdec8cb73cb0c5&language=en-US";
 
@@ -29,7 +29,9 @@ class MoviesPage extends Component {
             search: "",
             genres: [],
             preferredGenres: [],
-            error: ""
+            error: "",
+            isMoviesApi: true,
+            isGenreApi: false,
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -38,6 +40,7 @@ class MoviesPage extends Component {
         
     }
 
+    // fetching the data from GENRES_API and MOVIES_API and setting the states of genre and movies respectively
     componentDidMount(){
 
         fetch(GENRES_API)
@@ -56,6 +59,10 @@ class MoviesPage extends Component {
             });
         })
 
+        this.setState({
+            isMoviesApi: true
+        })
+
     }
 
     // function to keep a track of the changes in the input through react state
@@ -65,6 +72,7 @@ class MoviesPage extends Component {
         });
     }
 
+    // getting the search results based on search term from search api and seeting the state of movies
     handleSubmit(e){
         e.preventDefault();
 
@@ -73,11 +81,14 @@ class MoviesPage extends Component {
         .then(data => {
             this.setState({
                 movies: data.results,
-                search: ""
+                search: "",
+                isGenreApi: false,
+                isMoviesApi: false
             });
         });
     }
 
+    // logging out of the account
     async handleLogout(){
         this.setState({
             error: ""
@@ -85,6 +96,7 @@ class MoviesPage extends Component {
 
         try {
             await this.context.logout().then(() => {
+                // after logout redirecting to login page
                 history.push("/login");
                 window.location.reload(true);
             })
@@ -95,13 +107,20 @@ class MoviesPage extends Component {
         }
     }
 
+    // adding the ids of choosen genres in preferredGenres array
     addGenre(id){
+        const genre = document.getElementById(id);
+
+        genre.style.backgroundColor = "magenta"
+
         this.setState({
             preferredGenres: [...this.state.preferredGenres, id]
         })
     }
 
+    // showing the results based on preferred genres
     saveGenres = () => {
+        numPage = 1;
         let genreQuery = "";
         for(let i = 0; i < this.state.preferredGenres.length; i++){
             if(i === this.state.preferredGenres.length-1){
@@ -123,12 +142,61 @@ class MoviesPage extends Component {
         })
 
         this.setState({
-            preferredGenres: []
+            isGenreApi: true,
+            isMoviesApi: false
         })
     }
 
-    handleNextPage = () => {
+    // showing next page
+    handleNextPage = (e) => {
+        e.preventDefault();
 
+        console.log(this.state.isGenreApi, this.state.isMoviesApi)
+
+        if(this.state.isMoviesApi){
+            console.log("hey")
+            fetch(MOVIES_API + ++numPage)
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    movies: data.results
+                });
+            })
+        }
+
+        if(this.state.isGenreApi){
+            let genreQuery = "";
+            console.log(this.state.preferredGenres)
+            for(let i = 0; i < this.state.preferredGenres.length; i++){
+                if(i === this.state.preferredGenres.length-1){
+                    genreQuery = genreQuery + this.state.preferredGenres[i]
+                }else{
+                    genreQuery = genreQuery + this.state.preferredGenres[i] + "|"
+                }
+            }
+
+            console.log(genreQuery)
+            const SELECTED_GENRES_API = `https://api.themoviedb.org/3/discover/movie?api_key=17d9b4847fdd4db487cdec8cb73cb0c5&language=en-US&with_genres=${genreQuery}&page=${++numPage}`
+
+            fetch(SELECTED_GENRES_API)
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    movies: data.results,
+                });
+            })
+        }
+    }
+
+    handleReset = () => {
+        for(let i = 0; i < this.state.preferredGenres.length; i++){
+            const genre = document.getElementById(this.state.preferredGenres[i]);
+            genre.style.backgroundColor = "rgb(89, 25, 153)";
+        }
+
+        this.setState({
+            preferredGenres: []
+        })
     }
 
     render(){
@@ -167,10 +235,11 @@ class MoviesPage extends Component {
                     <h3>Genres</h3>
                     <div id='genre-tags'>
                         {this.state.genres.map(genre => 
-                            <span key={genre.id} id="genre-name" onClick={() => this.addGenre(genre.id)}>{genre.name}</span>
+                            <span key={genre.id} id={genre.id} className="genre-name" onClick={() => this.addGenre(genre.id)}>{genre.name}</span>
                         )}
                     </div>
-                    <button id='save-genre-btn' type='submit' onClick={this.saveGenres} >Show</button>
+                    <button className='genre-btn' type='submit' onClick={this.handleReset}>Reset</button>
+                    <button className='genre-btn' type='submit' onClick={this.saveGenres} >Show</button>
                 </div>
 
                 <div id='movie-page'>
@@ -179,7 +248,7 @@ class MoviesPage extends Component {
                     )}
                 </div>
                 
-                <button onClick={this.handleNextPage} >Next</button>
+                {(this.state.isMoviesApi || this.state.isGenreApi) && <button id="next" onClick={this.handleNextPage} >Next</button>}
                 
             </div>
         )

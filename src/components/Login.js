@@ -32,6 +32,7 @@ class Login extends Component {
         });
     }
 
+    // function for logging into an account
     async handleSubmit(e){
         e.preventDefault();
 
@@ -40,11 +41,14 @@ class Login extends Component {
                 error: "",
                 loading: true
             });
+            // logging if there is no error with the entered email and password
             await this.context.login(this.state.email, this.state.password).then(() => {
+                // redirecting to movies page after signing in
                 history.push("/movies");
                 window.location.reload(true);
             })
         }catch{
+            // setting up error if couldn't log in
             this.setState({
                 error: "Failed to log in"
             })
@@ -61,11 +65,13 @@ class Login extends Component {
     render(){
         return(
             <div>
+                {/* app's logo and name */}
                 <div style={{marginTop: "2%", marginLeft: "5%", color: "white"}}>
                     <FontAwesomeIcon icon={faVideoCamera} size="3x" color='red'  />
                     <h2 style={{marginTop: -2, color: "white"}}>Universal Cinema</h2>
                 </div>
 
+                {/* login container with form */}
                 <div className='container'>
                     <h1> Log In </h1>
                     {this.state.error && <h3>{this.state.error}</h3>}
@@ -99,6 +105,8 @@ class Login extends Component {
                         <button className='submit-btn' disabled={this.state.loading}>Log In</button>
                                             
                     </form>
+
+                    {/* if don't have an account redirecting to sign up page */}
                     <div className='redirect-link'> Need an account ? <Link to="/"> Sign Up </Link></div>
                 </div>
             </div>
