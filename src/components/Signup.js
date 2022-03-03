@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import '../styles/Signup.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { db } from '../firebase';
+import history from '../history';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faVideoCamera } from '@fortawesome/free-solid-svg-icons'
 
 class Signup extends Component {
     static contextType = AuthContext;
@@ -42,8 +46,17 @@ class Signup extends Component {
                 error: "",
                 loading: true
             });
-            await this.context.signup(this.state.email, this.state.password);
-            
+            await this.context.signup(this.state.email, this.state.password)
+            .then(() => {
+                return db.collection("users").doc(this.context.currentUser.uid).set({
+                    id: this.context.currentUser.uid,
+                    email: this.context.currentUser.email
+            })
+            .then(() => {
+                history.push("/movies");
+                window.location.reload(true);
+            })
+        })
         }catch{
             this.setState({
                 error: "Failed to create account"
@@ -59,52 +72,59 @@ class Signup extends Component {
     render(){
         // console.log(this.context.signup);
         return(
-            <div id='signup-container'>
-                <h1> Sign Up </h1>
-                {this.state.error && <h3>{this.state.error}</h3>}
-                <form id='signup-form' onSubmit={this.handleSubmit}>
-                    <div className='input-divs'>
-                        <label htmlFor='email' style={{fontSize: "1.2rem"}}> <b>Email: </b> </label> <br />
-                        <input
-                            type="email"
-                            id='email' 
-                            className='input-block'
-                            name='email'
-                            value={this.state.email}
-                            onChange={this.handleChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div className='input-divs'>
-                        <label htmlFor='password' style={{fontSize: "1.2rem"}}> <b>Password: </b> </label> <br />
-                        <input
-                            type="password"
-                            id='password' 
-                            className='input-block'
-                            name='password'
-                            value={this.state.password}
-                            onChange={this.handleChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div className='input-divs'>
-                        <label htmlFor='password-confirm' style={{fontSize: "1.2rem"}}> <b> Confirm Password: </b> </label> <br />
-                        <input
-                            type="password"
-                            id='password-confirm' 
-                            className='input-block'
-                            name='passwordConfirm'
-                            value={this.state.passwordConfirm}
-                            onChange={this.handleChange}
-                            required
-                        /> 
-                    </div>
-                    
-                    <button id='sign-up-btn' disabled={this.state.loading}>Sign Up</button>
-                </form>
-                <div> Already have an account ? <Link to="/login"> Log In </Link></div>
+            <div>
+                <div style={{marginTop: "2%", marginLeft: "5%", color: "white"}}>
+                    <FontAwesomeIcon icon={faVideoCamera} size="3x" color='red'  />
+                    <h2 style={{marginTop: -2, color: "white"}}>Universal Cinema</h2>
+                </div>
+
+                <div className='container'>
+                    <h1> Sign Up </h1>
+                    {this.state.error && <h3 id="error">{this.state.error}</h3>}
+                    <form className='form' onSubmit={this.handleSubmit}>
+                        <div className='input-divs'>
+                            <label htmlFor='email' style={{fontSize: "1.2rem"}}> <b>Email: </b> </label> <br />
+                            <input
+                                type="email"
+                                id='email' 
+                                className='input-block'
+                                name='email'
+                                value={this.state.email}
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        
+                        <div className='input-divs'>
+                            <label htmlFor='password' style={{fontSize: "1.2rem"}}> <b>Password: </b> </label> <br />
+                            <input
+                                type="password"
+                                id='password' 
+                                className='input-block'
+                                name='password'
+                                value={this.state.password}
+                                onChange={this.handleChange}
+                                required
+                            />
+                        </div>
+                        
+                        <div className='input-divs'>
+                            <label htmlFor='password-confirm' style={{fontSize: "1.2rem"}}> <b> Confirm Password: </b> </label> <br />
+                            <input
+                                type="password"
+                                id='password-confirm' 
+                                className='input-block'
+                                name='passwordConfirm'
+                                value={this.state.passwordConfirm}
+                                onChange={this.handleChange}
+                                required
+                            /> 
+                        </div>
+                        
+                        <button className='submit-btn' disabled={this.state.loading}>Sign Up</button>
+                    </form>
+                    <div className='redirect-link'> Already have an account ? <Link to="/login"> Log In </Link></div>
+                </div>
             </div>
         );
     }

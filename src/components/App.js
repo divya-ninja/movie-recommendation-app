@@ -1,6 +1,5 @@
 import '../styles/App.css';
 import Signup from './Signup';
-import Navbar from './Navbar';
 import { AuthProvider } from '../contexts/AuthContext';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
 import Login from './Login';
