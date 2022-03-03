@@ -1,3 +1,7 @@
+# Movie Recommendation Web App
+## A movie recommendation app made using React JS. In this app after signing up user can seach any movie and can get movies based on the genre prefrences.
+### link to the app - https://movie-recommendation-app-5e4b0.web.app/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
