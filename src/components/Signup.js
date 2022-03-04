@@ -111,6 +111,7 @@ class Signup extends Component {
                                 name='password'
                                 value={this.state.password}
                                 onChange={this.handleChange}
+                                placeholder="Minimum 6 characters"
                                 required
                             />
                         </div>
